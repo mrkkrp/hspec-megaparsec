@@ -24,7 +24,6 @@ module Test.Hspec.Megaparsec
 where
 
 import Control.Monad (unless)
-import Data.Either (isLeft, isRight)
 import Test.Hspec.Expectations
 import Text.Megaparsec
 import Text.Megaparsec.Pos (initialPos, defaultTabWidth)
@@ -73,10 +72,7 @@ shouldFailOn :: (Show a, Stream s t)
      -- ^ Parser that takes stream and produces result or error message
   -> s                 -- ^ Input that the parser should fail on
   -> Expectation
-p `shouldFailOn` s = case p s of
-  Left _ -> return ()
-  Right v -> expectationFailure $
-    "the parser is expected to fail, but it parsed: " ++ show v
+p `shouldFailOn` s = shouldFail (p s)
 
 -- | Check that a parser succeeds on some given input.
 --
@@ -87,11 +83,7 @@ shouldSucceedOn :: (Show a, Stream s t)
      -- ^ Parser that takes stream and produces result or error message
   -> s                 -- ^ Input that the parser should succeed on
   -> Expectation
-p `shouldSucceedOn` s = case p s of
-  Left e -> expectationFailure $
-    "the parser is expected to succeed, but it failed with:\n" ++
-    showParseError e
-  Right _ -> return ()
+p `shouldSucceedOn` s = shouldSucceed (p s)
 
 ----------------------------------------------------------------------------
 -- Testing of error messages
@@ -122,7 +114,7 @@ r `shouldFailWith` e = case r of
 -- unconsumed. Use it with functions like 'runParser'' and 'runParserT''
 -- that support incremental parsing.
 --
--- > runParser (many (char 'x') <* eof) (initialState "xxa")
+-- > runParser' (many (char 'x') <* eof) (initialState "xxa")
 -- >   `failsLeaving` "a"
 --
 -- See also: 'initialState'.
@@ -134,13 +126,13 @@ failsLeaving :: (Show a, Eq s, Show s, Stream s t)
   -> s                 -- ^ Part of input that should be left unconsumed
   -> Expectation
 (st,r) `failsLeaving` s =
-  (r `shouldSatisfy` isLeft) >> checkUnconsumed s (stateInput st)
+  shouldFail r >> checkUnconsumed s (stateInput st)
 
 -- | Check that a parser succeeds and leaves certain part of input
--- unconsumed. Use it with functions like 'runParser' and 'runParserT'' that
--- support incremental parsing.
+-- unconsumed. Use it with functions like 'runParser'' and 'runParserT''
+-- that support incremental parsing.
 --
--- > runParser (many (char 'x')) (initialState "xxa")
+-- > runParser' (many (char 'x')) (initialState "xxa")
 -- >   `succeedsLeaving` "a"
 --
 -- See also: 'initialState'.
@@ -152,7 +144,34 @@ succeedsLeaving :: (Show a, Eq s, Show s, Stream s t)
   -> s                 -- ^ Part of input that should be left unconsumed
   -> Expectation
 (st,r) `succeedsLeaving` s =
-  (r `shouldSatisfy` isRight) >> checkUnconsumed s (stateInput st)
+  shouldSucceed r >> checkUnconsumed s (stateInput st)
+
+-- | Given input for parsing, construct initial state for parser (that is,
+-- with empty file name, default tab width and position at 1 line and 1
+-- column).
+
+initialState :: Stream s t => s -> State s
+initialState s = State s (initialPos "") defaultTabWidth
+
+----------------------------------------------------------------------------
+-- Helpers
+
+-- | Expectation that argument is result of a failed parser.
+
+shouldFail :: Show a => Either ParseError a -> Expectation
+shouldFail r = case r of
+  Left _ -> return ()
+  Right v -> expectationFailure $
+    "the parser is expected to fail, but it parsed: " ++ show v
+
+-- | Expectation that argument is result of a succeeded parser.
+
+shouldSucceed :: Show a => Either ParseError a -> Expectation
+shouldSucceed r = case r of
+  Left e -> expectationFailure $
+    "the parser is expected to succeed, but it failed with:\n" ++
+    showParseError e
+  Right _ -> return ()
 
 -- | Compare two streams for equality and in the case of mismatch report it.
 
@@ -163,13 +182,6 @@ checkUnconsumed :: (Eq s, Show s, Stream s t)
 checkUnconsumed e a = unless (e == a) . expectationFailure $
   "the parser is expected to leave unconsumed input: " ++ show e ++
   "\nbut it left this: " ++ show a
-
--- | Given input for parsing, construct initial state for parser (that is,
--- with empty file name, default tab width and position at 1 line and 1
--- column).
-
-initialState :: Stream s t => s -> State s
-initialState s = State s (initialPos "") defaultTabWidth
 
 -- | Render parse error in a way that is suitable for inserting it in test
 -- suite report.
