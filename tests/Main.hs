@@ -35,6 +35,34 @@ module Main (main) where
 import Test.Hspec
 import Test.Hspec.Megaparsec
 import Text.Megaparsec
+import Text.Megaparsec.Error (newErrorMessages)
+import Text.Megaparsec.Pos (initialPos)
+
+-- | Toy tests, just an example of usage.
 
 main :: IO ()
-main = hspec undefined
+main = hspec $ do
+  describe "shouldParse" $
+    it "works" $
+      parse letterChar "" "x" `shouldParse` 'x'
+  describe "parseSatisfies" $
+    it "works" $
+      parse (many punctuationChar) "" "?!!" `parseSatisfies` ((== 3) . length)
+  describe "shouldFailOn" $
+    it "works" $
+      parse (char 'x') "" `shouldFailOn` "a"
+  describe "shouldSucceedOn" $
+    it "works" $
+      parse (char 'x') "" `shouldSucceedOn` "x"
+  describe "shouldFailWith" $
+    it "works" $
+      parse (char 'x') "" "b" `shouldFailWith`
+        newErrorMessages [Unexpected "'b'", Expected "'x'"] (initialPos "")
+  describe "failsLeaving" $
+    it "works" $
+      runParser' (many (char 'x') <* eof) (initialState "xxa")
+        `failsLeaving` "a"
+  describe "succeedsLeaving" $
+    it "works" $
+      runParser' (many (char 'x')) (initialState "xxa")
+        `succeedsLeaving` "a"
