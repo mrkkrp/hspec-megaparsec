@@ -61,7 +61,7 @@ main = hspec $ do
   describe "failsLeaving" $
     it "works" $
       runParser' (many (char 'x') <* eof) (initialState "xxa")
-        `failsLeaving` "a"
+        `failsLeaving` "xxa"
   describe "succeedsLeaving" $
     it "works" $
       runParser' (many (char 'x')) (initialState "xxa")

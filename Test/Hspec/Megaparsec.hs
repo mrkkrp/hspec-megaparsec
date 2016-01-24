@@ -115,7 +115,7 @@ r `shouldFailWith` e = case r of
 -- that support incremental parsing.
 --
 -- > runParser' (many (char 'x') <* eof) (initialState "xxa")
--- >   `failsLeaving` "a"
+-- >   `failsLeaving` "xxa"
 --
 -- See also: 'initialState'.
 
