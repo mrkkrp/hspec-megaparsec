@@ -37,8 +37,6 @@ script:
    esac
  - cabal build
  - cabal test --show-details=always
-              --test-option=--threads=2
-              --test-option=--maximum-generated-tests=1000
  - cabal sdist
  - if [ "$CABALVER" != "1.16" ]; then
     cabal haddock | grep "100%" | wc -l | grep "1";
