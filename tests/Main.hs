@@ -30,6 +30,8 @@
 -- ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 -- POSSIBILITY OF SUCH DAMAGE.
 
+{-# LANGUAGE CPP #-}
+
 module Main (main) where
 
 import Test.Hspec
@@ -37,6 +39,10 @@ import Test.Hspec.Megaparsec
 import Text.Megaparsec
 import Text.Megaparsec.Error (newErrorMessages)
 import Text.Megaparsec.Pos (initialPos)
+
+#if !MIN_VERSION_base(4,8,0)
+import Control.Applicative ((<*))
+#endif
 
 -- | Toy tests, just an example of usage.
 
