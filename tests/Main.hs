@@ -67,7 +67,11 @@ main = hspec $ do
   describe "failsLeaving" $
     it "works" $
       runParser' (many (char 'x') <* eof) (initialState "xxa")
+#if MIN_VERSION_megaparsec(4,4,0)
+        `failsLeaving` "a"
+#else
         `failsLeaving` "xxa"
+#endif
   describe "succeedsLeaving" $
     it "works" $
       runParser' (many (char 'x')) (initialState "xxa")
