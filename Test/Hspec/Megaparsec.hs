@@ -67,7 +67,7 @@ r `parseSatisfies` p = case r of
 --
 -- > parse (char 'x') "" `shouldFailOn` "a"
 
-shouldFailOn :: (Show a, Stream s t)
+shouldFailOn :: Show a
   => (s -> Either ParseError a)
      -- ^ Parser that takes stream and produces result or error message
   -> s                 -- ^ Input that the parser should fail on
@@ -78,7 +78,7 @@ p `shouldFailOn` s = shouldFail (p s)
 --
 -- > parse (char 'x') "" `shouldSucceedOn` "x"
 
-shouldSucceedOn :: (Show a, Stream s t)
+shouldSucceedOn :: Show a
   => (s -> Either ParseError a)
      -- ^ Parser that takes stream and produces result or error message
   -> s                 -- ^ Input that the parser should succeed on
@@ -150,7 +150,7 @@ succeedsLeaving :: (Show a, Eq s, Show s, Stream s t)
 -- with empty file name, default tab width and position at 1 line and 1
 -- column).
 
-initialState :: Stream s t => s -> State s
+initialState :: s -> State s
 initialState s = State s (initialPos "") defaultTabWidth
 
 ----------------------------------------------------------------------------
