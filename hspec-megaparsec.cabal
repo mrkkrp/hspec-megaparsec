@@ -31,7 +31,7 @@
 -- POSSIBILITY OF SUCH DAMAGE.
 
 name:                 hspec-megaparsec
-version:              0.1.1
+version:              0.2.0
 cabal-version:        >= 1.10
 license:              BSD3
 license-file:         LICENSE.md
@@ -53,7 +53,7 @@ flag dev
 
 library
   build-depends:      base               >= 4.6 && < 5
-                    , containers   >= 0.5 && < 0.6
+                    , containers         >= 0.5 && < 0.6
                     , hspec-expectations >= 0.5
                     , megaparsec         >= 5.0 && < 6.0
 
@@ -76,10 +76,10 @@ test-suite tests
   else
     ghc-options:      -Wall
   build-depends:      base               >= 4.6 && < 5
-                    , containers   >= 0.5 && < 0.6
+                    , containers         >= 0.5 && < 0.6
                     , hspec              >= 2.0
                     , hspec-expectations >= 0.5
-                    , hspec-megaparsec   >= 0.1
+                    , hspec-megaparsec   >= 0.2
                     , megaparsec         >= 5.0 && < 6.0
   if !impl(ghc >= 8.0)
     build-depends:    semigroups         == 0.18.*
