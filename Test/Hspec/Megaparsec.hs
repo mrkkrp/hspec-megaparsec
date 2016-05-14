@@ -9,6 +9,8 @@
 --
 -- Utility functions for testing Megaparsec parsers with Hspec.
 
+{-# LANGUAGE FlexibleContexts #-}
+
 module Test.Hspec.Megaparsec
   ( -- * Basic expectations
     shouldParse
@@ -24,9 +26,10 @@ module Test.Hspec.Megaparsec
 where
 
 import Control.Monad (unless)
+import Data.List.NonEmpty (NonEmpty (..))
 import Test.Hspec.Expectations
 import Text.Megaparsec
-import Text.Megaparsec.Pos (initialPos, defaultTabWidth)
+import Text.Megaparsec.Pos (defaultTabWidth)
 
 ----------------------------------------------------------------------------
 -- Basic expectations
@@ -35,8 +38,8 @@ import Text.Megaparsec.Pos (initialPos, defaultTabWidth)
 --
 -- > parse letterChar "" "x" `shouldParse` 'x'
 
-shouldParse :: (Eq a, Show a)
-  => Either ParseError a
+shouldParse :: (Ord t, ShowToken t, ShowErrorComponent e, Eq a, Show a)
+  => Either (ParseError t e) a
      -- ^ Result of parsing as returned by function like 'parse'
   -> a                 -- ^ Desired result
   -> Expectation
@@ -51,8 +54,8 @@ r `shouldParse` v = case r of
 --
 -- > parse (many punctuationChar) "" "?!!" `parseSatisfies` ((== 3) . length)
 
-parseSatisfies :: Show a
-  => Either ParseError a
+parseSatisfies :: (Ord t, ShowToken t, ShowErrorComponent e, Show a)
+  => Either (ParseError t e) a
      -- ^ Result of parsing as returned by function like 'parse'
   -> (a -> Bool)       -- ^ Predicate
   -> Expectation
@@ -68,7 +71,7 @@ r `parseSatisfies` p = case r of
 -- > parse (char 'x') "" `shouldFailOn` "a"
 
 shouldFailOn :: Show a
-  => (s -> Either ParseError a)
+  => (s -> Either (ParseError t e) a)
      -- ^ Parser that takes stream and produces result or error message
   -> s                 -- ^ Input that the parser should fail on
   -> Expectation
@@ -78,8 +81,8 @@ p `shouldFailOn` s = shouldFail (p s)
 --
 -- > parse (char 'x') "" `shouldSucceedOn` "x"
 
-shouldSucceedOn :: Show a
-  => (s -> Either ParseError a)
+shouldSucceedOn :: (Ord t, ShowToken t, ShowErrorComponent e, Show a)
+  => (s -> Either (ParseError t e) a)
      -- ^ Parser that takes stream and produces result or error message
   -> s                 -- ^ Input that the parser should succeed on
   -> Expectation
@@ -96,9 +99,9 @@ p `shouldSucceedOn` s = shouldSucceed (p s)
 -- > parse (char 'x') "" "b" `shouldFailWith`
 -- >   newErrorMessages [Unexpected "'b'", Expected "'x'"] (initialPos "")
 
-shouldFailWith :: Show a
-  => Either ParseError a
-  -> ParseError
+shouldFailWith :: (Ord t, ShowToken t, ShowErrorComponent e, Show a)
+  => Either (ParseError t e) a
+  -> ParseError t e
   -> Expectation
 r `shouldFailWith` e = case r of
   Left e' -> unless (e == e') . expectationFailure $
@@ -119,8 +122,8 @@ r `shouldFailWith` e = case r of
 --
 -- See also: 'initialState'.
 
-failsLeaving :: (Show a, Eq s, Show s, Stream s t)
-  => (State s, Either ParseError a)
+failsLeaving :: (Show a, Eq s, Show s, Stream s)
+  => (State s, Either (ParseError (Token s) e) a)
      -- ^ Parser that takes stream and produces result along with actual
      -- state information
   -> s                 -- ^ Part of input that should be left unconsumed
@@ -137,8 +140,13 @@ failsLeaving :: (Show a, Eq s, Show s, Stream s t)
 --
 -- See also: 'initialState'.
 
-succeedsLeaving :: (Show a, Eq s, Show s, Stream s t)
-  => (State s, Either ParseError a)
+succeedsLeaving :: ( ShowToken (Token s)
+                   , ShowErrorComponent e
+                   , Show a
+                   , Eq s
+                   , Show s
+                   , Stream s )
+  => (State s, Either (ParseError (Token s) e) a)
      -- ^ Parser that takes stream and produces result along with actual
      -- state information
   -> s                 -- ^ Part of input that should be left unconsumed
@@ -151,14 +159,14 @@ succeedsLeaving :: (Show a, Eq s, Show s, Stream s t)
 -- column).
 
 initialState :: s -> State s
-initialState s = State s (initialPos "") defaultTabWidth
+initialState s = State s (initialPos "" :| []) defaultTabWidth
 
 ----------------------------------------------------------------------------
 -- Helpers
 
 -- | Expectation that argument is result of a failed parser.
 
-shouldFail :: Show a => Either ParseError a -> Expectation
+shouldFail :: Show a => Either (ParseError t e) a -> Expectation
 shouldFail r = case r of
   Left _ -> return ()
   Right v -> expectationFailure $
@@ -166,7 +174,8 @@ shouldFail r = case r of
 
 -- | Expectation that argument is result of a succeeded parser.
 
-shouldSucceed :: Show a => Either ParseError a -> Expectation
+shouldSucceed :: (Ord t, ShowToken t, ShowErrorComponent e, Show a)
+  => Either (ParseError t e) a -> Expectation
 shouldSucceed r = case r of
   Left e -> expectationFailure $
     "the parser is expected to succeed, but it failed with:\n" ++
@@ -175,7 +184,7 @@ shouldSucceed r = case r of
 
 -- | Compare two streams for equality and in the case of mismatch report it.
 
-checkUnconsumed :: (Eq s, Show s, Stream s t)
+checkUnconsumed :: (Eq s, Show s, Stream s)
   => s                 -- ^ Expected unconsumed input
   -> s                 -- ^ Actual unconsumed input
   -> Expectation
@@ -186,5 +195,6 @@ checkUnconsumed e a = unless (e == a) . expectationFailure $
 -- | Render parse error in a way that is suitable for inserting it in test
 -- suite report.
 
-showParseError :: ParseError -> String
-showParseError = unlines . fmap ("  " ++) . lines . show
+showParseError :: (Ord t, ShowToken t, ShowErrorComponent e)
+  => ParseError t e -> String
+showParseError = unlines . fmap ("  " ++) . lines . parseErrorPretty
