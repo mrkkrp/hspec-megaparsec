@@ -52,9 +52,9 @@ flag dev
   default:            False
 
 library
-  build-depends:      base               >= 4.6 && < 5
+  build-depends:      base               >= 4.6 && < 5.0
                     , containers         >= 0.5 && < 0.6
-                    , hspec-expectations >= 0.5
+                    , hspec-expectations >= 0.5 && < 0.8
                     , megaparsec         >= 5.0 && < 6.0
 
   if !impl(ghc >= 8.0)
@@ -75,10 +75,10 @@ test-suite tests
     ghc-options:      -Wall -Werror
   else
     ghc-options:      -Wall
-  build-depends:      base               >= 4.6 && < 5
+  build-depends:      base               >= 4.6 && < 5.0
                     , containers         >= 0.5 && < 0.6
-                    , hspec              >= 2.0
-                    , hspec-expectations >= 0.5
+                    , hspec              >= 2.0 && < 3.0
+                    , hspec-expectations >= 0.5 && < 0.8
                     , hspec-megaparsec   >= 0.2
                     , megaparsec         >= 5.0 && < 6.0
   if !impl(ghc >= 8.0)
