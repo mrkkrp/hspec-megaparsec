@@ -96,8 +96,11 @@ p `shouldSucceedOn` s = shouldSucceed (p s)
 -- parse errors to check against. See "Text.Megaparsec.Pos" for functions to
 -- construct textual positions.
 --
--- > parse (char 'x') "" "b" `shouldFailWith`
--- >   newErrorMessages [Unexpected "'b'", Expected "'x'"] (initialPos "")
+-- > parse (char 'x') "" "b" `shouldFailWith` ParseError
+-- >   { errorPos        = initialPos "" :| []
+-- >   , errorUnexpected = Set.singleton (Tokens $ 'b' :| [])
+-- >   , errorExpected   = Set.singleton (Tokens $ 'x' :| [])
+-- >   , errorCustom     = Set.empty }
 
 shouldFailWith :: (Ord t, ShowToken t, ShowErrorComponent e, Show a)
   => Either (ParseError t e) a
