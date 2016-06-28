@@ -1,3 +1,8 @@
+## Hspec Megaparsec 0.2.1
+
+* Refreshed obsolete documentation for `shouldFailWith` and how it reports
+  not matching parse errors.
+
 ## Hspec Megaparsec 0.2.0
 
 * This version of `hspec-megaparsec` should be used with Megaparsec 5.

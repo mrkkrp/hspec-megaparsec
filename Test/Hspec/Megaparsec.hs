@@ -109,7 +109,7 @@ shouldFailWith :: (Ord t, ShowToken t, ShowErrorComponent e, Show a)
 r `shouldFailWith` e = case r of
   Left e' -> unless (e == e') . expectationFailure $
     "the parser is expected to fail with:\n" ++ showParseError e ++
-    "but it failed with:\n" ++ showParseError e
+    "but it failed with:\n" ++ showParseError e'
   Right v -> expectationFailure $
     "the parser is expected to fail, but it parsed: " ++ show v
 
