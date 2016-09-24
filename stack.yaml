@@ -1,5 +1,5 @@
-resolver: lts-6.2
+resolver: lts-6.18
 packages:
 - '.'
 extra-deps:
-- megaparsec-5.0.0
+- megaparsec-5.0.1
