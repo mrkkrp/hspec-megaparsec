@@ -7,12 +7,14 @@
 [![Build Status](https://travis-ci.org/mrkkrp/hspec-megaparsec.svg?branch=master)](https://travis-ci.org/mrkkrp/hspec-megaparsec)
 [![Coverage Status](https://coveralls.io/repos/mrkkrp/hspec-megaparsec/badge.svg?branch=master&service=github)](https://coveralls.io/github/mrkkrp/hspec-megaparsec?branch=master)
 
-The package provides utilities for testing
-[`Megaparsec`](https://hackage.haskell.org/package/megaparsec) parsers with with
-[`Hspec`](https://hackage.haskell.org/package/hspec).
+The package is the recommended library for
+testing [`Megaparsec`](https://hackage.haskell.org/package/megaparsec)
+parsers with with [`Hspec`](https://hackage.haskell.org/package/hspec). As
+of Megaparsec 5.1.0, its test suite is re-written with Hspec and this
+package with a few ad-hoc helpers.
 
 Consult Haddocks for usage, which should be trivial. Also see test suite of
-this package.
+this package or [Megaparsec test suite](https://github.com/mrkkrp/megaparsec/tree/master/tests).
 
 ## License
 
