@@ -153,8 +153,8 @@ r `shouldFailWith` e = case r of
 --
 -- @since 0.3.0
 
-err :: (Ord t, ShowToken t, ShowErrorComponent e)
-  => NonEmpty SourcePos -- ^ 'ParseError' position
+err
+  :: NonEmpty SourcePos -- ^ 'ParseError' position
   -> EC t e             -- ^ Error components
   -> ParseError t e     -- ^ Resulting 'ParseError'
 err pos (EC u e c) = ParseError pos u e c
@@ -269,7 +269,7 @@ eeof = mempty { ecExpected = E.singleton EndOfInput }
 --
 -- @since 0.3.0
 
-cstm :: (Ord t, Ord e) => e -> EC t e
+cstm :: e -> EC t e
 cstm e = EC E.empty E.empty (E.singleton e)
 
 ----------------------------------------------------------------------------
