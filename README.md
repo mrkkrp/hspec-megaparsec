@@ -18,6 +18,6 @@ this package or [Megaparsec test suite](https://github.com/mrkkrp/megaparsec/tre
 
 ## License
 
-Copyright © 2016 Mark Karpov
+Copyright © 2016–2017 Mark Karpov
 
 Distributed under BSD 3 clause license.
