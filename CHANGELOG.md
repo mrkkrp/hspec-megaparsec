@@ -2,6 +2,8 @@
 
 * Support for Megaparsec 5.2.0.
 
+* Drop support for GHC 7.6.
+
 ## Hspec Megaparsec 0.3.0
 
 * Added helpers for parse error construction (useful with `shouldFailWith`):
