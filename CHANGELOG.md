@@ -1,4 +1,8 @@
-## Hspec Megaparec 0.3.0
+## Hspec Megaparsec 0.3.1
+
+* Support for Megaparsec 5.2.0.
+
+## Hspec Megaparsec 0.3.0
 
 * Added helpers for parse error construction (useful with `shouldFailWith`):
   `err`, `posI`, `posN`, `utok`, `utoks`, `ulabel`, `ueof`, `etok`, `etoks`,

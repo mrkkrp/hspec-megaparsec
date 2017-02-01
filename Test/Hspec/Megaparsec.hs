@@ -320,7 +320,13 @@ succeedsLeaving :: ( ShowToken (Token s)
 -- column).
 
 initialState :: s -> State s
-initialState s = State s (initialPos "" :| []) defaultTabWidth
+initialState s = State
+  { stateInput           = s
+  , statePos             = initialPos "" :| []
+#if MIN_VERSION_megaparsec(5,2,0)
+  , stateTokensProcessed = 0
+#endif
+  , stateTabWidth        = defaultTabWidth }
 
 ----------------------------------------------------------------------------
 -- Helpers
