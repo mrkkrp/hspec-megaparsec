@@ -1,3 +1,7 @@
+## Hspec Megaparsec 1.0.0
+
+* To be used with Megaparsec 6.
+
 ## Hspec Megaparsec 0.3.1
 
 * Support for Megaparsec 5.2.0.

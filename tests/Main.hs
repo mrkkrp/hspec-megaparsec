@@ -2,16 +2,18 @@
 
 module Main (main) where
 
-import Data.List.NonEmpty (NonEmpty (..))
+import Data.Semigroup ((<>))
+import Data.Void
 import Test.Hspec
 import Test.Hspec.Megaparsec
 import Text.Megaparsec
-import Text.Megaparsec.String
-import qualified Data.Set as E
+import Text.Megaparsec.Char
 
 #if !MIN_VERSION_base(4,8,0)
 import Control.Applicative ((<*))
 #endif
+
+type Parser = Parsec Void String
 
 -- | Toy tests, just an example of usage.
 
@@ -33,11 +35,7 @@ main = hspec $ do
   describe "shouldFailWith" $
     it "works" $
       parse (char 'x' :: Parser Char) "" "b" `shouldFailWith`
-        ParseError
-          { errorPos        = initialPos "" :| []
-          , errorUnexpected = E.singleton (Tokens $ 'b' :| [])
-          , errorExpected   = E.singleton (Tokens $ 'x' :| [])
-          , errorCustom     = E.empty }
+        err posI (utok 'b' <> etok 'x')
   describe "failsLeaving" $
     it "works" $
       runParser' (many (char 'x') <* eof :: Parser String) (initialState "xxa")
