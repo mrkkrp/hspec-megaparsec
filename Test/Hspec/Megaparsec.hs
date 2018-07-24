@@ -9,12 +9,11 @@
 --
 -- Utility functions for testing Megaparsec parsers with Hspec.
 
-{-# LANGUAGE CPP                 #-}
+{-# LANGUAGE ConstraintKinds     #-}
 {-# LANGUAGE FlexibleContexts    #-}
 {-# LANGUAGE RankNTypes          #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeFamilies        #-}
-{-# LANGUAGE ConstraintKinds     #-}
 
 module Test.Hspec.Megaparsec
   ( -- * Basic expectations
@@ -97,11 +96,12 @@ p `shouldFailOn` s = shouldFail (p s)
 --
 -- > parse (char 'x') "" `shouldSucceedOn` "x"
 
-shouldSucceedOn :: ( HasCallStack
-                   , Ord t
-                   , ShowToken t
-                   , ShowErrorComponent e
-                   , Show a )
+shouldSucceedOn
+  :: ( HasCallStack
+     , Ord t
+     , ShowToken t
+     , ShowErrorComponent e
+     , Show a )
   => (s -> Either (ParseError t e) a)
      -- ^ Parser that takes stream and produces result or error message
   -> s                 -- ^ Input that the parser should succeed on
@@ -117,11 +117,12 @@ p `shouldSucceedOn` s = shouldSucceed (p s)
 --
 -- > parse (char 'x') "" "b" `shouldFailWith` err posI (utok 'b' <> etok 'x')
 
-shouldFailWith :: ( HasCallStack
-                  , Ord t
-                  , ShowToken t
-                  , ShowErrorComponent e
-                  , Show a )
+shouldFailWith
+  :: ( HasCallStack
+     , Ord t
+     , ShowToken t
+     , ShowErrorComponent e
+     , Show a )
   => Either (ParseError t e) a
   -> ParseError t e
   -> Expectation
@@ -144,11 +145,12 @@ r `shouldFailWith` e = case r of
 --
 -- See also: 'initialState'.
 
-failsLeaving :: ( HasCallStack
-                , Show a
-                , Eq s
-                , Show s
-                , Stream s )
+failsLeaving
+  :: ( HasCallStack
+     , Show a
+     , Eq s
+     , Show s
+     , Stream s )
   => (State s, Either (ParseError (Token s) e) a)
      -- ^ Parser that takes stream and produces result along with actual
      -- state information
@@ -166,13 +168,14 @@ failsLeaving :: ( HasCallStack
 --
 -- See also: 'initialState'.
 
-succeedsLeaving :: ( HasCallStack
-                   , ShowToken (Token s)
-                   , ShowErrorComponent e
-                   , Show a
-                   , Eq s
-                   , Show s
-                   , Stream s )
+succeedsLeaving
+  :: ( HasCallStack
+     , ShowToken (Token s)
+     , ShowErrorComponent e
+     , Show a
+     , Eq s
+     , Show s
+     , Stream s )
   => (State s, Either (ParseError (Token s) e) a)
      -- ^ Parser that takes stream and produces result along with actual
      -- state information
@@ -189,9 +192,7 @@ initialState :: s -> State s
 initialState s = State
   { stateInput           = s
   , statePos             = initialPos "" :| []
-#if MIN_VERSION_megaparsec(5,2,0)
   , stateTokensProcessed = 0
-#endif
   , stateTabWidth        = defaultTabWidth }
 
 ----------------------------------------------------------------------------
@@ -199,7 +200,8 @@ initialState s = State
 
 -- | Expectation that argument is result of a failed parser.
 
-shouldFail :: (HasCallStack, Show a)
+shouldFail
+  :: (HasCallStack, Show a)
   => Either (ParseError t e) a
   -> Expectation
 shouldFail r = case r of
@@ -209,11 +211,12 @@ shouldFail r = case r of
 
 -- | Expectation that argument is result of a succeeded parser.
 
-shouldSucceed :: ( HasCallStack
-                 , Ord t
-                 , ShowToken t
-                 , ShowErrorComponent e
-                 , Show a )
+shouldSucceed
+  :: ( HasCallStack
+     , Ord t
+     , ShowToken t
+     , ShowErrorComponent e
+     , Show a )
   => Either (ParseError t e) a
   -> Expectation
 shouldSucceed r = case r of
@@ -224,7 +227,8 @@ shouldSucceed r = case r of
 
 -- | Compare two streams for equality and in the case of mismatch report it.
 
-checkUnconsumed :: (HasCallStack, Eq s, Show s, Stream s)
+checkUnconsumed
+  :: (HasCallStack, Eq s, Show s, Stream s)
   => s                 -- ^ Expected unconsumed input
   -> s                 -- ^ Actual unconsumed input
   -> Expectation
