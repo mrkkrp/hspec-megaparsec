@@ -1,3 +1,7 @@
+## Hspec Megaparsec 1.1.0
+
+* Add HasCallStack constraint to combinators
+
 ## Hspec Megaparsec 1.0.0
 
 * To be used with Megaparsec 6.
