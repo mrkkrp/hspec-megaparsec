@@ -1,6 +1,7 @@
 ## Hspec Megaparsec 1.1.0
 
-* Add HasCallStack constraint to combinators
+* Add `HasCallStack` constraint to combinators to improve detection of
+  locations where test failures happen.
 
 ## Hspec Megaparsec 1.0.0
 
