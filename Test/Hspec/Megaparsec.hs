@@ -14,6 +14,7 @@
 {-# LANGUAGE RankNTypes          #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeFamilies        #-}
+{-# LANGUAGE ConstraintKinds     #-}
 
 module Test.Hspec.Megaparsec
   ( -- * Basic expectations
@@ -44,7 +45,12 @@ import Text.Megaparsec.Error.Builder
 --
 -- > parse letterChar "" "x" `shouldParse` 'x'
 
-shouldParse :: (Ord t, ShowToken t, ShowErrorComponent e, Eq a, Show a)
+shouldParse :: ( HasCallStack
+               , Ord t
+               , ShowToken t
+               , ShowErrorComponent e
+               , Eq a
+               , Show a )
   => Either (ParseError t e) a
      -- ^ Result of parsing as returned by function like 'parse'
   -> a                 -- ^ Desired result
@@ -60,7 +66,11 @@ r `shouldParse` v = case r of
 --
 -- > parse (many punctuationChar) "" "?!!" `parseSatisfies` ((== 3) . length)
 
-parseSatisfies :: (Ord t, ShowToken t, ShowErrorComponent e, Show a)
+parseSatisfies :: ( HasCallStack
+                  , Ord t
+                  , ShowToken t
+                  , ShowErrorComponent e
+                  , Show a )
   => Either (ParseError t e) a
      -- ^ Result of parsing as returned by function like 'parse'
   -> (a -> Bool)       -- ^ Predicate
@@ -76,7 +86,7 @@ r `parseSatisfies` p = case r of
 --
 -- > parse (char 'x') "" `shouldFailOn` "a"
 
-shouldFailOn :: Show a
+shouldFailOn :: (HasCallStack, Show a)
   => (s -> Either (ParseError t e) a)
      -- ^ Parser that takes stream and produces result or error message
   -> s                 -- ^ Input that the parser should fail on
@@ -87,7 +97,11 @@ p `shouldFailOn` s = shouldFail (p s)
 --
 -- > parse (char 'x') "" `shouldSucceedOn` "x"
 
-shouldSucceedOn :: (Ord t, ShowToken t, ShowErrorComponent e, Show a)
+shouldSucceedOn :: ( HasCallStack
+                   , Ord t
+                   , ShowToken t
+                   , ShowErrorComponent e
+                   , Show a )
   => (s -> Either (ParseError t e) a)
      -- ^ Parser that takes stream and produces result or error message
   -> s                 -- ^ Input that the parser should succeed on
@@ -103,7 +117,11 @@ p `shouldSucceedOn` s = shouldSucceed (p s)
 --
 -- > parse (char 'x') "" "b" `shouldFailWith` err posI (utok 'b' <> etok 'x')
 
-shouldFailWith :: (Ord t, ShowToken t, ShowErrorComponent e, Show a)
+shouldFailWith :: ( HasCallStack
+                  , Ord t
+                  , ShowToken t
+                  , ShowErrorComponent e
+                  , Show a )
   => Either (ParseError t e) a
   -> ParseError t e
   -> Expectation
@@ -126,7 +144,11 @@ r `shouldFailWith` e = case r of
 --
 -- See also: 'initialState'.
 
-failsLeaving :: (Show a, Eq s, Show s, Stream s)
+failsLeaving :: ( HasCallStack
+                , Show a
+                , Eq s
+                , Show s
+                , Stream s )
   => (State s, Either (ParseError (Token s) e) a)
      -- ^ Parser that takes stream and produces result along with actual
      -- state information
@@ -144,7 +166,8 @@ failsLeaving :: (Show a, Eq s, Show s, Stream s)
 --
 -- See also: 'initialState'.
 
-succeedsLeaving :: ( ShowToken (Token s)
+succeedsLeaving :: ( HasCallStack
+                   , ShowToken (Token s)
                    , ShowErrorComponent e
                    , Show a
                    , Eq s
@@ -176,7 +199,7 @@ initialState s = State
 
 -- | Expectation that argument is result of a failed parser.
 
-shouldFail :: Show a
+shouldFail :: (HasCallStack, Show a)
   => Either (ParseError t e) a
   -> Expectation
 shouldFail r = case r of
@@ -186,7 +209,11 @@ shouldFail r = case r of
 
 -- | Expectation that argument is result of a succeeded parser.
 
-shouldSucceed :: (Ord t, ShowToken t, ShowErrorComponent e, Show a)
+shouldSucceed :: ( HasCallStack
+                 , Ord t
+                 , ShowToken t
+                 , ShowErrorComponent e
+                 , Show a )
   => Either (ParseError t e) a
   -> Expectation
 shouldSucceed r = case r of
@@ -197,7 +224,7 @@ shouldSucceed r = case r of
 
 -- | Compare two streams for equality and in the case of mismatch report it.
 
-checkUnconsumed :: (Eq s, Show s, Stream s)
+checkUnconsumed :: (HasCallStack, Eq s, Show s, Stream s)
   => s                 -- ^ Expected unconsumed input
   -> s                 -- ^ Actual unconsumed input
   -> Expectation
