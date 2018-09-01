@@ -35,7 +35,7 @@ main = hspec $ do
   describe "shouldFailWith" $
     it "works" $
       parse (char 'x' :: Parser Char) "" "b" `shouldFailWith`
-        err posI (utok 'b' <> etok 'x')
+        err 0 (utok 'b' <> etok 'x')
   describe "failsLeaving" $
     it "works" $
       runParser' (many (char 'x') <* eof :: Parser String) (initialState "xxa")

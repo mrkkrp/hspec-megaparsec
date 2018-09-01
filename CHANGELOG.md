@@ -1,3 +1,9 @@
+## Hspec Megaparsec 2.0.0
+
+* To be used with Megaparsec 7.
+
+* Added functions: `shouldFailWithM` and `initialPosState`.
+
 ## Hspec Megaparsec 1.1.0
 
 * Add `HasCallStack` constraint to combinators to improve detection of
