@@ -8,6 +8,8 @@
 -- Portability :  portable
 --
 -- Utility functions for testing Megaparsec parsers with Hspec.
+--
+-- This version of the library should be used with Megaparsec 7.
 
 {-# LANGUAGE ConstraintKinds     #-}
 {-# LANGUAGE FlexibleContexts    #-}
@@ -23,19 +25,21 @@ module Test.Hspec.Megaparsec
   , shouldFailOn
     -- * Testing of error messages
   , shouldFailWith
+  , shouldFailWithM
     -- * Incremental parsing
   , failsLeaving
   , succeedsLeaving
   , initialState
+  , initialPosState
     -- * Re-exports
   , module Text.Megaparsec.Error.Builder )
 where
 
 import Control.Monad (unless)
-import Data.List.NonEmpty (NonEmpty (..))
 import Test.Hspec.Expectations
 import Text.Megaparsec
 import Text.Megaparsec.Error.Builder
+import qualified Data.List.NonEmpty as NE
 
 ----------------------------------------------------------------------------
 -- Basic expectations
@@ -44,19 +48,20 @@ import Text.Megaparsec.Error.Builder
 --
 -- > parse letterChar "" "x" `shouldParse` 'x'
 
-shouldParse :: ( HasCallStack
-               , Ord t
-               , ShowToken t
-               , ShowErrorComponent e
-               , Eq a
-               , Show a )
-  => Either (ParseError t e) a
+shouldParse
+  :: ( HasCallStack
+     , ShowErrorComponent e
+     , Stream s
+     , Show a
+     , Eq a
+     )
+  => Either (ParseErrorBundle s e) a
      -- ^ Result of parsing as returned by function like 'parse'
   -> a                 -- ^ Desired result
   -> Expectation
 r `shouldParse` v = case r of
   Left e -> expectationFailure $ "expected: " ++ show v ++
-    "\nbut parsing failed with error:\n" ++ showParseError e
+    "\nbut parsing failed with error:\n" ++ showBundle e
   Right x -> unless (x == v) . expectationFailure $
     "expected: " ++ show v ++ "\nbut got: " ++ show x
 
@@ -65,19 +70,21 @@ r `shouldParse` v = case r of
 --
 -- > parse (many punctuationChar) "" "?!!" `parseSatisfies` ((== 3) . length)
 
-parseSatisfies :: ( HasCallStack
-                  , Ord t
-                  , ShowToken t
-                  , ShowErrorComponent e
-                  , Show a )
-  => Either (ParseError t e) a
+parseSatisfies
+  :: ( HasCallStack
+     , ShowErrorComponent e
+     , Stream s
+     , Show a
+     , Eq a
+     )
+  => Either (ParseErrorBundle s e) a
      -- ^ Result of parsing as returned by function like 'parse'
   -> (a -> Bool)       -- ^ Predicate
   -> Expectation
 r `parseSatisfies` p = case r of
   Left e -> expectationFailure $
     "expected a parsed value to check against the predicate" ++
-    "\nbut parsing failed with error:\n" ++ showParseError e
+    "\nbut parsing failed with error:\n" ++ showBundle e
   Right x -> unless (p x) . expectationFailure $
     "the value did not satisfy the predicate: " ++ show x
 
@@ -85,8 +92,9 @@ r `parseSatisfies` p = case r of
 --
 -- > parse (char 'x') "" `shouldFailOn` "a"
 
-shouldFailOn :: (HasCallStack, Show a)
-  => (s -> Either (ParseError t e) a)
+shouldFailOn
+  :: (HasCallStack, Show a)
+  => (s -> Either (ParseErrorBundle s e) a)
      -- ^ Parser that takes stream and produces result or error message
   -> s                 -- ^ Input that the parser should fail on
   -> Expectation
@@ -98,11 +106,11 @@ p `shouldFailOn` s = shouldFail (p s)
 
 shouldSucceedOn
   :: ( HasCallStack
-     , Ord t
-     , ShowToken t
      , ShowErrorComponent e
-     , Show a )
-  => (s -> Either (ParseError t e) a)
+     , Stream s
+     , Show a
+     )
+  => (s -> Either (ParseErrorBundle s e) a)
      -- ^ Parser that takes stream and produces result or error message
   -> s                 -- ^ Input that the parser should succeed on
   -> Expectation
@@ -119,17 +127,43 @@ p `shouldSucceedOn` s = shouldSucceed (p s)
 
 shouldFailWith
   :: ( HasCallStack
-     , Ord t
-     , ShowToken t
      , ShowErrorComponent e
-     , Show a )
-  => Either (ParseError t e) a
-  -> ParseError t e
+     , Stream s
+     , Show a
+     , Eq e
+     )
+  => Either (ParseErrorBundle s e) a -- ^ The result of parsing
+  -> ParseError s e    -- ^ Expected parse errors
   -> Expectation
-r `shouldFailWith` e = case r of
-  Left e' -> unless (e == e') . expectationFailure $
-    "the parser is expected to fail with:\n" ++ showParseError e ++
-    "but it failed with:\n" ++ showParseError e'
+r `shouldFailWith` perr1 = r `shouldFailWithM` [perr1]
+
+-- | Similar to 'shouldFailWith', but allows to check parsers that can
+-- report more than one parse error at a time.
+--
+-- @since 2.0.0
+
+shouldFailWithM
+  :: ( HasCallStack
+     , ShowErrorComponent e
+     , Stream s
+     , Show a
+     , Eq e
+     )
+  => Either (ParseErrorBundle s e) a -- ^ The result of parsing
+  -> [ParseError s e]
+     -- ^ Expected parse errors, the argument is a normal linked list (as
+     -- opposed to the more correct 'NonEmpty' list) as a syntactical
+     -- convenience for the user, passing empty list here will result in an
+     -- error
+  -> Expectation
+r `shouldFailWithM` perrs1' = case r of
+  Left e0 ->
+    let e1 = e0 { bundleErrors = perrs1 }
+        perrs0 = bundleErrors e0
+        perrs1 = NE.fromList perrs1'
+    in unless (perrs0 == perrs1) . expectationFailure $
+       "the parser is expected to fail with:\n" ++ showBundle e1 ++
+       "but it failed with:\n" ++ showBundle e0
   Right v -> expectationFailure $
     "the parser is expected to fail, but it parsed: " ++ show v
 
@@ -150,14 +184,15 @@ failsLeaving
      , Show a
      , Eq s
      , Show s
-     , Stream s )
-  => (State s, Either (ParseError (Token s) e) a)
+     )
+  => (State s, Either (ParseErrorBundle s e) a)
      -- ^ Parser that takes stream and produces result along with actual
      -- state information
   -> s                 -- ^ Part of input that should be left unconsumed
   -> Expectation
-(st,r) `failsLeaving` s =
-  shouldFail r >> checkUnconsumed s (stateInput st)
+(st,r) `failsLeaving` s = do
+  shouldFail r
+  checkUnconsumed s (stateInput st)
 
 -- | Check that a parser succeeds and leaves certain part of input
 -- unconsumed. Use it with functions like 'runParser'' and 'runParserT''
@@ -170,39 +205,51 @@ failsLeaving
 
 succeedsLeaving
   :: ( HasCallStack
-     , ShowToken (Token s)
-     , ShowErrorComponent e
      , Show a
      , Eq s
      , Show s
-     , Stream s )
-  => (State s, Either (ParseError (Token s) e) a)
+     , ShowErrorComponent e
+     , Stream s
+     )
+  => (State s, Either (ParseErrorBundle s e) a)
      -- ^ Parser that takes stream and produces result along with actual
      -- state information
   -> s                 -- ^ Part of input that should be left unconsumed
   -> Expectation
-(st,r) `succeedsLeaving` s =
-  shouldSucceed r >> checkUnconsumed s (stateInput st)
+(st,r) `succeedsLeaving` s = do
+  shouldSucceed r
+  checkUnconsumed s (stateInput st)
 
--- | Given input for parsing, construct initial state for parser (that is,
--- with empty file name, default tab width and position at 1 line and 1
--- column).
+-- | Given input for parsing, construct initial state for parser.
 
 initialState :: s -> State s
 initialState s = State
-  { stateInput           = s
-  , statePos             = initialPos "" :| []
-  , stateTokensProcessed = 0
-  , stateTabWidth        = defaultTabWidth }
+  { stateInput  = s
+  , stateOffset = 0
+  , statePosState = initialPosState s
+  }
+
+-- | Given input for parsing, construct initial positional state.
+--
+-- @since 2.0.0
+
+initialPosState :: s -> PosState s
+initialPosState s = PosState
+  { pstateInput = s
+  , pstateOffset = 0
+  , pstateSourcePos = initialPos ""
+  , pstateTabWidth = defaultTabWidth
+  , pstateLinePrefix = ""
+  }
 
 ----------------------------------------------------------------------------
 -- Helpers
 
--- | Expectation that argument is result of a failed parser.
+-- | Expect that the argument is a result of a failed parser.
 
 shouldFail
   :: (HasCallStack, Show a)
-  => Either (ParseError t e) a
+  => Either (ParseErrorBundle s e) a
   -> Expectation
 shouldFail r = case r of
   Left _ -> return ()
@@ -213,22 +260,25 @@ shouldFail r = case r of
 
 shouldSucceed
   :: ( HasCallStack
-     , Ord t
-     , ShowToken t
      , ShowErrorComponent e
-     , Show a )
-  => Either (ParseError t e) a
+     , Stream s
+     , Show a
+     )
+  => Either (ParseErrorBundle s e) a
   -> Expectation
 shouldSucceed r = case r of
   Left e -> expectationFailure $
     "the parser is expected to succeed, but it failed with:\n" ++
-    showParseError e
+    showBundle e
   Right _ -> return ()
 
 -- | Compare two streams for equality and in the case of mismatch report it.
 
 checkUnconsumed
-  :: (HasCallStack, Eq s, Show s, Stream s)
+  :: ( HasCallStack
+     , Eq s
+     , Show s
+     )
   => s                 -- ^ Expected unconsumed input
   -> s                 -- ^ Actual unconsumed input
   -> Expectation
@@ -236,10 +286,17 @@ checkUnconsumed e a = unless (e == a) . expectationFailure $
   "the parser is expected to leave unconsumed input: " ++ show e ++
   "\nbut it left this: " ++ show a
 
--- | Render parse error in a way that is suitable for inserting it in a test
--- suite report.
+-- | Render a parse error bundle in a way that is suitable for inserting it
+-- in a test suite report.
 
-showParseError :: (Ord t, ShowToken t, ShowErrorComponent e)
-  => ParseError t e
+showBundle
+  :: ( ShowErrorComponent e
+     , Stream s
+     )
+  => ParseErrorBundle s e
   -> String
-showParseError = unlines . fmap ("  " ++) . lines . parseErrorPretty
+showBundle = unlines . fmap indent . lines . errorBundlePretty
+  where
+    indent x = if null x
+      then x
+      else "  " ++ x
