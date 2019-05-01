@@ -1,3 +1,7 @@
+## Unreleased
+
+* Dropped support for GHC 7.10.
+
 ## Hspec Megaparsec 2.0.0
 
 * To be used with Megaparsec 7.
