@@ -1,5 +1,3 @@
-{-# LANGUAGE CPP #-}
-
 module Main (main) where
 
 import Data.Semigroup ((<>))
@@ -8,10 +6,6 @@ import Test.Hspec
 import Test.Hspec.Megaparsec
 import Text.Megaparsec
 import Text.Megaparsec.Char
-
-#if !MIN_VERSION_base(4,8,0)
-import Control.Applicative ((<*))
-#endif
 
 type Parser = Parsec Void String
 
