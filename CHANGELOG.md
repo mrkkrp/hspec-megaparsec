@@ -1,5 +1,8 @@
 ## Unreleased
 
+* Adjusted `shouldParse` to use `shouldBe` from `hspec` under the hood to
+  take advantage of its pretty colorful error reporting.
+
 * Dropped support for GHC 8.0 and older.
 
 ## Hspec Megaparsec 2.0.0

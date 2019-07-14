@@ -62,8 +62,7 @@ shouldParse
 r `shouldParse` v = case r of
   Left e -> expectationFailure $ "expected: " ++ show v ++
     "\nbut parsing failed with error:\n" ++ showBundle e
-  Right x -> unless (x == v) . expectationFailure $
-    "expected: " ++ show v ++ "\nbut got: " ++ show x
+  Right x -> x `shouldBe` v
 
 -- | Create an expectation by saying that the parser should successfully
 -- parse a value and that the value should satisfy some predicate.
