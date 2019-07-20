@@ -1,4 +1,4 @@
-## Unreleased
+## Hspec Megaparsec 2.0.1
 
 * Adjusted `shouldParse` to use `shouldBe` from `hspec` under the hood to
   take advantage of its pretty colorful error reporting.
