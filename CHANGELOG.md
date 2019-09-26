@@ -1,3 +1,7 @@
+## Unreleased
+
+* Dropped support for GHC 8.2.
+
 ## Hspec Megaparsec 2.0.1
 
 * Adjusted `shouldParse` to use `shouldBe` from `hspec` under the hood to
