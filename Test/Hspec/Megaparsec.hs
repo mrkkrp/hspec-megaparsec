@@ -19,7 +19,8 @@
 
 module Test.Hspec.Megaparsec
   ( -- * Basic expectations
-    shouldParse
+    hasParsed
+  , shouldParse
   , parseSatisfies
   , shouldSucceedOn
   , shouldFailOn
@@ -43,6 +44,19 @@ import qualified Data.List.NonEmpty as NE
 
 ----------------------------------------------------------------------------
 -- Basic expectations
+
+-- | Ensure that a parse has been successful
+--
+-- > hasParsed $ parse letterChar "" "x"
+
+hasParsed 
+  :: ( ShowErrorComponent e
+     , Stream s
+     )
+  => Either (ParseErrorBundle s e) a
+  -> Expectation
+hasParsed (Left e) = expectationFailure $ "expected parsing to succeed but parsing failed with:\n" ++ showBundle e
+hasParsed _ = pure ()
 
 -- | Create an expectation by saying what the result should be.
 --
