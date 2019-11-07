@@ -1,5 +1,7 @@
 ## Unreleased
 
+* Works with Megaparsec 8.
+
 * Dropped support for GHC 8.2.
 
 ## Hspec Megaparsec 2.0.1
