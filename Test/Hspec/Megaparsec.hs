@@ -8,8 +8,6 @@
 -- Portability :  portable
 --
 -- Utility functions for testing Megaparsec parsers with Hspec.
---
--- This version of the library should be used with Megaparsec 7.
 
 {-# LANGUAGE ConstraintKinds     #-}
 {-# LANGUAGE FlexibleContexts    #-}
