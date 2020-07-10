@@ -4,7 +4,7 @@
 [![Hackage](https://img.shields.io/hackage/v/hspec-megaparsec.svg?style=flat)](https://hackage.haskell.org/package/hspec-megaparsec)
 [![Stackage Nightly](http://stackage.org/package/hspec-megaparsec/badge/nightly)](http://stackage.org/nightly/package/hspec-megaparsec)
 [![Stackage LTS](http://stackage.org/package/hspec-megaparsec/badge/lts)](http://stackage.org/lts/package/hspec-megaparsec)
-[![Build Status](https://travis-ci.org/mrkkrp/hspec-megaparsec.svg?branch=master)](https://travis-ci.org/mrkkrp/hspec-megaparsec)
+![CI](https://github.com/mrkkrp/hspec-megaparsec/workflows/CI/badge.svg?branch=master)
 
 The package is the recommended library for testing
 [`Megaparsec`](https://hackage.haskell.org/package/megaparsec) parsers with
