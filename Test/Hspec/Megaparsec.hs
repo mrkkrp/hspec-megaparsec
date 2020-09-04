@@ -52,6 +52,8 @@ shouldParse ::
   ( HasCallStack,
     ShowErrorComponent e,
     Stream s,
+    VisualStream s,
+    TraversableStream s,
     Show a,
     Eq a
   ) =>
@@ -76,6 +78,8 @@ parseSatisfies ::
   ( HasCallStack,
     ShowErrorComponent e,
     Stream s,
+    VisualStream s,
+    TraversableStream s,
     Show a,
     Eq a
   ) =>
@@ -113,6 +117,8 @@ shouldSucceedOn ::
   ( HasCallStack,
     ShowErrorComponent e,
     Stream s,
+    VisualStream s,
+    TraversableStream s,
     Show a
   ) =>
   -- | Parser that takes stream and produces result or error message
@@ -134,6 +140,8 @@ shouldFailWith ::
   ( HasCallStack,
     ShowErrorComponent e,
     Stream s,
+    VisualStream s,
+    TraversableStream s,
     Show a,
     Eq e
   ) =>
@@ -152,6 +160,8 @@ shouldFailWithM ::
   ( HasCallStack,
     ShowErrorComponent e,
     Stream s,
+    VisualStream s,
+    TraversableStream s,
     Show a,
     Eq e
   ) =>
@@ -217,7 +227,9 @@ succeedsLeaving ::
     Eq s,
     Show s,
     ShowErrorComponent e,
-    Stream s
+    Stream s,
+    VisualStream s,
+    TraversableStream s
   ) =>
   -- | Parser that takes stream and produces result along with actual
   -- state information
@@ -271,6 +283,8 @@ shouldSucceed ::
   ( HasCallStack,
     ShowErrorComponent e,
     Stream s,
+    VisualStream s,
+    TraversableStream s,
     Show a
   ) =>
   Either (ParseErrorBundle s e) a ->
@@ -303,7 +317,9 @@ checkUnconsumed e a =
 -- in a test suite report.
 showBundle ::
   ( ShowErrorComponent e,
-    Stream s
+    Stream s,
+    VisualStream s,
+    TraversableStream s
   ) =>
   ParseErrorBundle s e ->
   String
