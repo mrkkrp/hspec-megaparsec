@@ -1,3 +1,7 @@
+## Hspec Megaparsec 2.2.0
+
+* Works with Megaparsec 9.
+
 ## Hspec Megaparsec 2.1.0
 
 * Works with Megaparsec 8.
