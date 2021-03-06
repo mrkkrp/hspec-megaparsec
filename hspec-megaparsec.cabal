@@ -56,7 +56,7 @@ test-suite tests
         base >=4.13 && <5.0,
         hspec >=2.0 && <3.0,
         hspec-expectations >=0.8 && <0.9,
-        hspec-megaparsec -any,
+        hspec-megaparsec,
         megaparsec >=9.0 && <10.0
 
     if flag(dev)
