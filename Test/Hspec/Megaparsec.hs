@@ -152,7 +152,7 @@ shouldFailWith ::
   Expectation
 r `shouldFailWith` perr1 = r `shouldFailWithM` [perr1]
 
--- | Similar to 'shouldFailWith', but allows to check parsers that can
+-- | Similar to 'shouldFailWith', but allows us to check parsers that can
 -- report more than one parse error at a time.
 --
 -- @since 2.0.0

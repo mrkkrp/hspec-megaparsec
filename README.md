@@ -8,9 +8,7 @@
 
 The package is the recommended library for testing
 [`Megaparsec`](https://hackage.haskell.org/package/megaparsec) parsers with
-with [`Hspec`](https://hackage.haskell.org/package/hspec). As of Megaparsec
-5.1.0, its test suite is re-written with Hspec and this package with a few
-ad-hoc helpers.
+with [`Hspec`](https://hackage.haskell.org/package/hspec).
 
 Consult the Haddocks for usage, which should be trivial. Also see test suite
 of this package or [Megaparsec test
