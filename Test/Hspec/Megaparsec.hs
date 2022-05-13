@@ -65,7 +65,8 @@ shouldParse ::
 r `shouldParse` v = case r of
   Left e ->
     expectationFailure $
-      "expected: " ++ show v
+      "expected: "
+        ++ show v
         ++ "\nbut parsing failed with error:\n"
         ++ showBundle e
   Right x -> x `shouldBe` v
@@ -179,7 +180,8 @@ r `shouldFailWithM` perrs1' = case r of
         perrs0 = bundleErrors e0
         perrs1 = NE.fromList perrs1'
      in unless (perrs0 == perrs1) . expectationFailure $
-          "the parser is expected to fail with:\n" ++ showBundle e1
+          "the parser is expected to fail with:\n"
+            ++ showBundle e1
             ++ "but it failed with:\n"
             ++ showBundle e0
   Right v ->
@@ -309,7 +311,8 @@ checkUnconsumed ::
   Expectation
 checkUnconsumed e a =
   unless (e == a) . expectationFailure $
-    "the parser is expected to leave unconsumed input: " ++ show e
+    "the parser is expected to leave unconsumed input: "
+      ++ show e
       ++ "\nbut it left this: "
       ++ show a
 
