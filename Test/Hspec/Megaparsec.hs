@@ -37,7 +37,7 @@ module Test.Hspec.Megaparsec
 where
 
 import Control.Monad (unless)
-import qualified Data.List.NonEmpty as NE
+import Data.List.NonEmpty qualified as NE
 import Test.Hspec.Expectations
 import Text.Megaparsec
 import Text.Megaparsec.Error.Builder
