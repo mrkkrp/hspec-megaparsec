@@ -32,20 +32,14 @@ library
     default-language: GHC2021
     build-depends:
         base >=4.15 && <5.0,
-        containers >=0.5 && <0.7,
         hspec-expectations >=0.8 && <0.9,
         megaparsec >=9.0 && <10.0
 
     if flag(dev)
-        ghc-options: -Wall -Werror
+        ghc-options: -Wall -Werror -Wpartial-fields -Wunused-packages
 
     else
         ghc-options: -Wall
-
-    if flag(dev)
-        ghc-options:
-            -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns
-            -Wnoncanonical-monad-instances
 
 test-suite tests
     type:             exitcode-stdio-1.0
@@ -55,12 +49,13 @@ test-suite tests
     build-depends:
         base >=4.15 && <5.0,
         hspec >=2.0 && <3.0,
-        hspec-expectations >=0.8 && <0.9,
         hspec-megaparsec,
         megaparsec >=9.0 && <10.0
 
     if flag(dev)
-        ghc-options: -Wall -Werror
+        ghc-options:
+            -Wall -Werror -Wredundant-constraints -Wpartial-fields
+            -Wunused-packages
 
     else
         ghc-options: -Wall
