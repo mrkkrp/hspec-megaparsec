@@ -5,7 +5,7 @@ license:         BSD-3-Clause
 license-file:    LICENSE.md
 maintainer:      Mark Karpov <markkarpov92@gmail.com>
 author:          Mark Karpov <markkarpov92@gmail.com>
-tested-with:     ghc ==9.2.8 ghc ==9.4.7 ghc ==9.6.2
+tested-with:     ghc ==9.4.7 ghc ==9.6.3 ghc ==9.8.1
 homepage:        https://github.com/mrkkrp/hspec-megaparsec
 bug-reports:     https://github.com/mrkkrp/hspec-megaparsec/issues
 synopsis:        Utility functions for testing Megaparsec parsers with Hspec
@@ -31,9 +31,9 @@ library
     exposed-modules:  Test.Hspec.Megaparsec
     default-language: GHC2021
     build-depends:
-        base >=4.15 && <5.0,
+        base >=4.15 && <5,
         hspec-expectations >=0.8 && <0.9,
-        megaparsec >=9.0 && <10.0
+        megaparsec >=9 && <10
 
     if flag(dev)
         ghc-options: -Wall -Werror -Wpartial-fields -Wunused-packages
@@ -47,10 +47,10 @@ test-suite tests
     hs-source-dirs:   tests
     default-language: GHC2021
     build-depends:
-        base >=4.15 && <5.0,
-        hspec >=2.0 && <3.0,
+        base >=4.15 && <5,
+        hspec >=2 && <3,
         hspec-megaparsec,
-        megaparsec >=9.0 && <10.0
+        megaparsec >=9 && <10
 
     if flag(dev)
         ghc-options:
