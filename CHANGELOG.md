@@ -1,3 +1,7 @@
+## Hspec Megaparsec 2.2.1
+
+* Maintenance release with more modern and minimal dependencies.
+
 ## Hspec Megaparsec 2.2.0
 
 * Works with Megaparsec 9.
