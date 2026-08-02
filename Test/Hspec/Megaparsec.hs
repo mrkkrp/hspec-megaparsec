@@ -132,7 +132,7 @@ p `shouldSucceedOn` s = shouldSucceed (p s)
 ----------------------------------------------------------------------------
 -- Testing of error messages
 
--- | Create an expectation that parser should fail producing certain
+-- | Create an expectation that the parser should fail producing a certain
 -- 'ParseError'. Use the 'err' function from this module to construct a
 -- 'ParseError' to compare with.
 --
@@ -191,7 +191,7 @@ r `shouldFailWithM` perrs1' = case r of
 ----------------------------------------------------------------------------
 -- Incremental parsing
 
--- | Check that a parser fails and leaves a certain part of input
+-- | Check that a parser fails and leaves a certain part of the input
 -- unconsumed. Use it with functions like 'runParser'' and 'runParserT''
 -- that support incremental parsing.
 --
@@ -215,7 +215,7 @@ failsLeaving ::
   shouldFail r
   checkUnconsumed s (stateInput st)
 
--- | Check that a parser succeeds and leaves certain part of input
+-- | Check that a parser succeeds and leaves a certain part of the input
 -- unconsumed. Use it with functions like 'runParser'' and 'runParserT''
 -- that support incremental parsing.
 --
@@ -243,7 +243,7 @@ succeedsLeaving ::
   shouldSucceed r
   checkUnconsumed s (stateInput st)
 
--- | Given input for parsing, construct initial state for parser.
+-- | Given input for parsing, construct the initial state for the parser.
 initialState :: s -> State s e
 initialState s =
   State
@@ -253,7 +253,7 @@ initialState s =
       stateParseErrors = []
     }
 
--- | Given input for parsing, construct initial positional state.
+-- | Given input for parsing, construct the initial positional state.
 --
 -- @since 2.0.0
 initialPosState :: s -> PosState s
@@ -280,7 +280,7 @@ shouldFail r = case r of
     expectationFailure $
       "the parser is expected to fail, but it parsed: " ++ show v
 
--- | Expectation that argument is result of a succeeded parser.
+-- | Expect that the argument is the result of a succeeded parser.
 shouldSucceed ::
   ( HasCallStack,
     ShowErrorComponent e,

@@ -8,10 +8,10 @@
 
 The package is the recommended library for testing
 [`Megaparsec`](https://hackage.haskell.org/package/megaparsec) parsers with
-with [`Hspec`](https://hackage.haskell.org/package/hspec).
+[`Hspec`](https://hackage.haskell.org/package/hspec).
 
-Consult the Haddocks for usage, which should be trivial. Also see test suite
-of this package or [Megaparsec test
+Consult the Haddocks for usage, which should be trivial. Also see the test
+suite of this package or the [Megaparsec test
 suite](https://github.com/mrkkrp/megaparsec/tree/master/tests).
 
 ## Contribution
@@ -25,4 +25,4 @@ Pull requests are also welcome.
 
 Copyright © 2016–present Mark Karpov
 
-Distributed under BSD 3 clause license.
+Distributed under the BSD 3-clause license.
