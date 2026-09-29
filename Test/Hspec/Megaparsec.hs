@@ -176,7 +176,7 @@ shouldFailWithM ::
   Expectation
 r `shouldFailWithM` perrs1' = case r of
   Left e0 ->
-    let e1 = e0 {bundleErrors = perrs1}
+    let e1 = e0{bundleErrors = perrs1}
         perrs0 = bundleErrors e0
         perrs1 = NE.fromList perrs1'
      in unless (perrs0 == perrs1) . expectationFailure $
